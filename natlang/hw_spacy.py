@@ -7,8 +7,14 @@ import spacy
 from spacy import displacy
 from spacy.matcher import PhraseMatcher
 from sklearn.manifold import TSNE
+from sklearn.decomposition import LatentDirichletAllocation as LDA
 import numpy as np
 import pandas as pd
+import scipy.sparse as sprs
+import functools
+from itertools import chain
+from collections import Counter
+import joblib as jl
 import matplotlib.pyplot as plt
 
 text = """\
@@ -96,25 +102,103 @@ df_us_econ_news = pd.read_csv(
     encoding="latin")
     #encoding="iso-8859-1")
 
-# TODO: check why elpy is so slow
-X_orig_ = []
-corpus_inds = []
-corpus = {}
-for el in df_us_econ_news.itertuples():
-    doc_idx = el.articleid
-    doc = nlp(el.text)
-    for sent_idx, sent in enumerate(doc.sents):
-        idx = (doc_idx, sent_idx)
-        corpus[idx] = sent
-        corpus_inds.append(idx)
-        X_orig_.append(sent.vector)
+# Tokenize the text and get a great deal of info
+docs = list(nlp.pipe(iter(df_us_econ_news.text), batch_size=50, n_threads=3))
 
-# Build the t-SNE 2D vectors
-X_w2v = np.vstack(X_orig_); del X_orig_
+def skip_tok(tok):
+    """ Create a vocabulary by cutting top words """
+    return tok.is_punct or tok.is_stop or tok.pos_ == 'DET'
 
-# X_embedded = TSNE(n_components=2).fit_transform(X_w2v)
+words_filtered = chain.from_iterable(map(
+    lambda doc: [tok.text.lower() for tok in doc
+                 if not skip_tok(tok)], docs))
+words_count = Counter(words_filtered)
 
-# for vec2, idx in zip(X_embeded, corpus_inds):
-#     {'x': vec2[0],
-#      'y': vec2[1],
-#      'text': corpus[idx].text}
+def build_vocab(uniq_toks):
+    idx2tok = dict(enumerate(uniq_toks))
+    tok2idx = dict([(v, k) for k, v in idx2tok.items()])
+    return tok2idx, idx2tok
+
+words_tok2idx, words_idx2tok = build_vocab([w for w, cnt in words_count.items() if cnt > 1])
+
+""" Create doc/word feature matrix
+"""
+# Build the COO sparse matrix
+coo_rows = []
+coo_cols = []
+coo_data = []
+
+for i, doc in enumerate(docs):
+    toks = [w.text.lower() for w in doc if not skip_tok(w)]
+    tok_cntr = Counter(toks)
+    for tok, cnt in tok_cntr.items():
+        try: j = words_tok2idx[tok]
+        except: continue
+        coo_rows.append(i)
+        coo_cols.append(j)
+        coo_data.append(cnt)
+
+X = sprs.coo_matrix((coo_data, (coo_rows, coo_cols)),
+                    shape=(len(docs), len(words_tok2idx)))
+
+""" Load an existing LDA model or retrain one """
+try:
+    lda = jl.load('lda.model.jl')
+except:
+    # This takes a while to build
+    lda = LDA(n_topics=30,
+              learning_method='batch',
+              max_iter=2000,
+              verbose=2,
+              n_jobs=-2)
+    lda.fit(X)
+    jl.dump(lda, 'lda.model.jl')
+
+# Obtain a summary of each "topic"
+n_top_words = 10
+topic_top_words = []
+print('Learned Topics')
+for tpc_idx, tpc in enumerate(lda.components_):
+    print("Topic #%d:" % tpc_idx)
+    tok_inds = tpc.argsort()[:(-n_top_words - 1):-1]
+    _top_words = [words_idx2tok[idx] for idx in tok_inds]
+    topic_top_words.append(_top_words)
+    print(' '.join(_top_words))
+
+# Get the actual topics for each documents
+V = lda.transform(X)
+doc_top_topics = V.argsort(axis=1)[:,:-4:-1]
+_ser = {'doc_top_topics': doc_top_topics,
+        'topic_top_words': topic_top_words}
+jl.dump(_ser, 'lda.decomp.jl')
+
+
+if False:
+    """ Other methods """
+    # TODO: check why elpy is so slow
+    X_orig_ = []
+    corpus_inds = []
+    corpus = {}
+    for el in df_us_econ_news.itertuples():
+        doc_idx = el.articleid
+        doc = nlp(el.text)
+        for sent_idx, sent in enumerate(doc.sents):
+            idx = (doc_idx, sent_idx)
+            corpus[idx] = sent
+            corpus_inds.append(idx)
+            X_orig_.append(sent.vector)
+
+    # Build the t-SNE 2D vectors
+    X_w2v = np.vstack(X_orig_); del X_orig_
+
+    # This may take a little while
+    X_embedded = TSNE(n_components=2).fit_transform(X_w2v)
+
+    # _raw_export = []
+    # for vec2, idx in zip(X_embedded, corpus_inds):
+    #     _raw_export.append({'x': vec2[0],
+    #                         'y': vec2[1],
+    #                         'text': corpus[idx].text})
+
+    # df_export = pd.DataFrame(_raw_export)
+    # df_export.to_csv('docs_tsne2d.csv')
