@@ -88,3 +88,12 @@
 [submodule "proj_kleio/distill"]
 	path = proj_kleio/distill
 	url = https://github.com/distillpub/template.git
+[submodule "pixsrl/yotsuba"]
+	path = pixsrl/yotsuba
+	url = https://github.com/aekul/yotsuba
+[submodule "pixsrl/aether"]
+	path = pixsrl/aether
+	url = https://github.com/aekul/aether.git
+[submodule "pixsrl/mitsuba"]
+	path = pixsrl/mitsuba
+	url = https://github.com/mitsuba-renderer/mitsuba
