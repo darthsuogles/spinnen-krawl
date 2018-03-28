@@ -22,7 +22,14 @@ lazy val root = (project in file(".")).
   settings(
     name := "root",
     publishArtifact := false
-  ).aggregate(sparkRepl, scioRepl, repl, agent)
+  ).aggregate(
+    /* Core modules */
+    repl,
+    agent,
+    /* REPL: Spark and Beam */
+    //sparkRepl,
+    //scioRepl,
+  )
 
 lazy val core = (project in file("core")).
   settings(commonSettings: _*).
@@ -30,33 +37,6 @@ lazy val core = (project in file("core")).
     name := "core",
     publishArtifact := false
   ).aggregate(repl)
-
-// Third party tools
-lazy val scio = (project in file("scio"))
-  .settings(
-    name := "scio",
-    scalaVersion := LibVer.scala_2_12,
-    dependencyOverrides ++= Seq(
-      "io.grpc" %% "grpc-core" % "1.6.1"
-    )
-  )
-
-lazy val sparkRepl = (project in file(".spark.repl"))
-  .settings(commonSettings: _*)
-  .settings(
-    name := "srepl",
-    libraryDependencies ++= LibDeps.spark
-  ).aggregate(repl).dependsOn(repl)
-
-// http://www.scala-sbt.org/1.x/docs/Library-Management.html#Overriding+a+version
-lazy val scioRepl = (project in file(".scio.repl"))
-  .settings(
-    name := "scio-repl",
-    scalaVersion := LibVer.scala_2_12,
-    dependencyOverrides ++= Seq(
-      "io.grpc" %% "grpc-core" % "1.6.1"
-    )
-  ).aggregate(scio, ammonite).dependsOn(scio, ammonite)
 
 lazy val ammonite = (project in file("ammonite"))
 
@@ -81,6 +61,33 @@ lazy val agent = (project in file("agent")).
       outFP
     }
   )
+
+// lazy val sparkRepl = (project in file(".spark.repl"))
+//   .settings(commonSettings: _*)
+//   .settings(
+//     name := "srepl",
+//     libraryDependencies ++= LibDeps.spark
+//   ).aggregate(repl).dependsOn(repl)
+
+// // Third party tools
+// lazy val scio = (project in file("scio"))
+//   .settings(
+//     name := "scio",
+//     scalaVersion := LibVer.scala_2_12,
+//     dependencyOverrides ++= Seq(
+//       "io.grpc" %% "grpc-core" % "1.6.1"
+//     )
+//   )
+
+// // http://www.scala-sbt.org/1.x/docs/Library-Management.html#Overriding+a+version
+// lazy val scioRepl = (project in file(".scio.repl"))
+//   .settings(
+//     name := "scio-repl",
+//     scalaVersion := LibVer.scala_2_12,
+//     dependencyOverrides ++= Seq(
+//       "io.grpc" %% "grpc-core" % "1.6.1"
+//     )
+//   ).aggregate(scio, ammonite).dependsOn(scio, ammonite)
 
 // // TODO: check these `spPackage::artifactPath`
 // lazy val spkgs = (project in file(".spark-packages")).
