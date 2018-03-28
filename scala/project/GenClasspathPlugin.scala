@@ -7,8 +7,8 @@ import sys.process.Process
 object GenClasspathPlugin extends AutoPlugin {
 
   /**
-    * When an auto plugin provides a stable field such as val or object named autoImport, 
-    * the contents of the field are wildcard imported in set, eval, and .sbt files. 
+    * When an auto plugin provides a stable field such as val or object named autoImport,
+    * the contents of the field are wildcard imported in set, eval, and .sbt files.
     * Ref: http://www.scala-sbt.org/0.13/docs/Plugins.html
     */
   object autoImport {
@@ -26,7 +26,10 @@ object GenClasspathPlugin extends AutoPlugin {
       genClasspath := {
         import java.io.PrintWriter
         // Find all jar dependencies and construct a classpath string
-        val fout = new PrintWriter((baseDirectory.value / "SBT_RUNTIME_CLASSPATH").toString)
+        val cpDir = baseDirectory.value / ".sbt.classpath"
+        cpDir.mkdirs()
+        val fout = new PrintWriter((cpDir / "SBT_RUNTIME_CLASSPATH").toString)
+
         println("Building runtime classpath for current project")
         val cp: Classpath = (fullClasspath in Runtime).value
         try fout.write(cp.files.map(_.toString).mkString(":"))
@@ -41,6 +44,6 @@ object GenClasspathPlugin extends AutoPlugin {
   // This plugin is automatically enabled for projects which are JvmPlugin.
   override def trigger = allRequirements
 
-  override val projectSettings = 
+  override val projectSettings =
     inConfig(Compile)(baseGenClasspathSettings) ++ inConfig(Test)(baseGenClasspathSettings)
 }
