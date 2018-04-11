@@ -1,0 +1,10 @@
+#!/bin/bash
+# -*- shell-script -*-
+
+_bsd_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+docker run -it --privileged=true --net=host \
+       -v "${_bsd_}":/workspace \
+       -w /workspace \
+       yotsuba-env:latest \
+       /bin/bash

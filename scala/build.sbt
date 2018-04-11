@@ -26,8 +26,9 @@ lazy val root = (project in file(".")).
     /* Core modules */
     repl,
     agent,
-    /* REPL: Spark and Beam */
-    //sparkRepl,
+    /* REPL: Apache Spark */
+    sparkRepl,
+    /* REPL: Google Beam */
     //scioRepl,
   )
 
@@ -62,12 +63,13 @@ lazy val agent = (project in file("agent")).
     }
   )
 
-// lazy val sparkRepl = (project in file(".spark.repl"))
-//   .settings(commonSettings: _*)
-//   .settings(
-//     name := "srepl",
-//     libraryDependencies ++= LibDeps.spark
-//   ).aggregate(repl).dependsOn(repl)
+// REPL: Apache Spark
+lazy val sparkRepl = (project in file(".spark.repl"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "sparkRepl",
+    libraryDependencies ++= LibDeps.spark
+  ).aggregate(repl).dependsOn(repl)
 
 // // Third party tools
 // lazy val scio = (project in file("scio"))

@@ -36,13 +36,17 @@ object LibDeps {
     "akka-testkit"
   ) map { "com.typesafe.akka" %% _ % LibVer.akka }
 
-  lazy val spark = Seq(
+  private lazy val sparkModules = Seq(
     "spark-core",
     "spark-sql",
     "spark-streaming",
     "spark-mllib",
     "spark-graphx"
-  ).map { "org.apache.spark" %% _ % LibVer.sparkMaster }
+  )
+  lazy val sparkMaster = sparkModules.map {
+    "org.apache.spark" %% _ % LibVer.sparkMaster }
+  lazy val spark = sparkModules.map {
+    "org.apache.spark" %% _ % LibVer.spark }
 
   lazy val ammonite = Seq(
     "com.lihaoyi" % s"ammonite_${LibVer.scala}" % LibVer.ammonite,

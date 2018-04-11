@@ -4,7 +4,7 @@ set -euo pipefail
 
 _bsd_="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-spark_ver=2.2.1
+spark_ver=2.3.0
 spark_tarball="spark-${spark_ver}-bin-hadoop2.7.tgz"
 spark_dir="${spark_tarball%.*}"
 
