@@ -11,6 +11,12 @@ metastore*/
 pixsrl/cb_2016_us_county_20m/
 *.rdf.gz
 
+*.tar.gz
+*.tgz
+*.tar.bz2
+*.tbz2
+*.tar.xz
+
 .ipy3
 *.pyc
 *.py~*

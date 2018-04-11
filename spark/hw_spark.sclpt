@@ -2,17 +2,21 @@
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.{functions => F}
 
+// To allow Spark to accept remote connection through SSH,
+// we must get the correct SSH configuration.
 // Spark discussions: https://www.zhihu.com/topic/19942170/hot
 implicit val spark = {
   // http://spark.apache.org/docs/latest/configuration.html
   val sess = SparkSession.builder()
-    .master("local[2]")
+    .master("spark://localhost:7077")
+    .config("spark.submit.deployMode", "cluster")
     .appName("phi9t")
     .getOrCreate()
   sess.sparkContext.setLogLevel("ERROR")
   sess
 }
 
+spark.range(1000).reduce(_ + _)
 
 // For implicit conversions like converting RDDs to DataFrames
 import spark.implicits._

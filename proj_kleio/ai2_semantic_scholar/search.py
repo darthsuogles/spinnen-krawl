@@ -32,6 +32,7 @@ def get_article_info(title):
 
 
 fetched_data = get_article_info(title)
+print(fetched_data)
 df_yearly_counts = pd.DataFrame(fetched_data['stats']['years']).set_index('key')
 df_yearly_counts.plot(); plt.show()
 

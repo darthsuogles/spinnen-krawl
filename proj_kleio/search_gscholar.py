@@ -37,7 +37,7 @@ class ScholarParser():
         """ In this base class, the callback does nothing.
         """
         raise NotImplementedError
-    
+
     def parse(self, html):
         """ Initiates parsing HTML content.
         Then each specific part will be parsed accordingly
@@ -46,7 +46,7 @@ class ScholarParser():
         for div in self.soup.find_all(
                 lambda tag: tag.has_attr('class') and 'gs_r' in tag['class']):
             self._parse_article(div)
-            
+
     def _parse_article(self, div):
         """ The function must be implemented by a derived class
         """
@@ -87,13 +87,13 @@ class ScholarParser():
 
 ###########################################################################
 # BEGIN of specific parser implementations
-#   Google might occasionally change the page design. 
+#   Google might occasionally change the page design.
 
 class ScholarParser160307(ScholarParser):
     """
     Nothing really changed, yet we are looking for a more refined way
-    to store all the information 
-    
+    to store all the information
+
     Structure of an paper entry
     <div class="gs_r">
       <div class="gs_ggs gs_fl"> actual links to the pdf (Find It @ ...)
@@ -115,10 +115,10 @@ class ScholarParser160307(ScholarParser):
             if not hasattr(tag, 'name'):
                 continue
 
-            # Everything is under this div 
+            # Everything is under this div
             if tag.name == 'div':
                 self.logger.debug(tag.get('class'))
-                if tag.get('class') == ['gs_ggs', 'gs_fl']: 
+                if tag.get('class') == ['gs_ggs', 'gs_fl']:
                     self.logger.debug("parsing: div gs_ggs gs_fl")
                     self._parse_gs_ggs_gs_fl(tag)
 
@@ -147,34 +147,34 @@ class ScholarParser160307(ScholarParser):
 
         if self.article['title']:
             self.handle_article(self.article)
-      
+
     def _parse_gs_ggs_gs_fl(self, div):
         """
         <div class="gs_ggs gs_fl"> actual links to the pdf (Find It @ ...)
 
         Retrieve a valid link with pdf
 
-        Warning: 
+        Warning:
           1. This tag might not exist
           2. Even if it exists, a valid pdf link might not exist
         """
-        assert div.get('class') == ['gs_ggs', 'gs_fl'], "class must be gs_ggs + gs_fl" 
+        assert div.get('class') == ['gs_ggs', 'gs_fl'], "class must be gs_ggs + gs_fl"
         self.logger.debug(div.findAll())
         return div
-        for tag in div:            
-            if tag.name == 'div':                 
+        for tag in div:
+            if tag.name == 'div':
                 self.logger.debug(tag)
                 text = tag.findAll(text = True)
-                self.logger.debug(text)                    
+                self.logger.debug(text)
         return div
-    
+
     def _parse_gs_a(self, div):
         """" <div class="gs_a"> year, author and google author link (h-index and so)
         """
         return div
 
     def _parse_gs_rt(self, div):
-        """ <div class="gs_rt"> title and (usually publisher) url        
+        """ <div class="gs_rt"> title and (usually publisher) url
         """
         return div
 
@@ -182,7 +182,7 @@ class ScholarParser160307(ScholarParser):
         """ <div class="gs_fl"> "cited by #", related article, versions, web of science
         """
         return div
-        
+
     def _parse_gs_rs(self, div):
         """ <div class="gs_rs"> summary of the paper (shorter than the abstract)
         """
@@ -203,7 +203,7 @@ class ScholarQuerier():
     """
 
     url_pref = 'http://scholar.google.com/scholar?q='
-    
+
     UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/601.4.4 (KHTML, like Gecko) Version/9.0.3 Safari/601.4.4"
 
     url_params = {
@@ -227,7 +227,7 @@ class ScholarQuerier():
         def __init__(self, querier):
             super().__init__()
             self.querier = querier
-            
+
         def handle_article(self, article):
             self.querier.articles.append(article)
 
@@ -246,7 +246,7 @@ class ScholarQuerier():
             val = str(val)
             if val:
                 op_list[ self.option_id[op] ] = requests.utils.quote(val)
-                
+
         print(op_list)
         self.url_params.update(op_list)
 
@@ -257,7 +257,7 @@ class ScholarQuerier():
         self.req = requests.get(url,
                                 params=self.url_params,
                                 headers={'user-agent': self.UA})
-        print('Query url: {url} => {stat}'.format(url=self.req.url, stat=self.req.status_code))        
+        print('Query url: {url} => {stat}'.format(url=self.req.url, stat=self.req.status_code))
 
     def query(self, search_title):
         """
@@ -270,8 +270,8 @@ class ScholarQuerier():
 
 def search_gscholar():
     usage_str = """
-        scholar.py [options] <query string> 
-    
+        scholar.py [options] <query string>
+
           A command-line interface to Google Scholar.
           Text output will show on the terminal screen.
         """
@@ -302,25 +302,27 @@ def search_gscholar():
     params = {'author': options.author,
               'count': options.count,
               'year_lo': options.year}
-    querier = ScholarQuerier(params)    
+    querier = ScholarQuerier(params)
     articles = querier.query(query)
-    
+
     if options.count > 0:
         articles = articles[:options.count]
+
     print('Number of articles retrieved: {}'.format(len(articles)))
     for art in articles:
         print("---------------------------------------")
-        art.as_org_print()
+        #art.as_org_print()
+        art.as_org_concise_print()
         print("----------------------------\n")
 
 
-# Testing    
+# Testing
 # test_search_title = "Short Text Understanding Through Lexical Semantic Analysis"
 # qr = ScholarQuerier({'author': '', 'count': 0, 'year_lo':2010})
 # qr.query(test_search_title)
 # #soup = BeautifulSoup(qr.req.content, 'html.parser')
 # #ss = soup.find_all(lambda tag: tag.has_attr('class') and 'gs_r' in tag['class'])
 # qr.parser.parse(qr.req.content)
-        
+
 if __name__ == "__main__":
     search_gscholar()

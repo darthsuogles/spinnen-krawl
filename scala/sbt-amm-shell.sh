@@ -20,7 +20,7 @@ _bsd_="$(cd "$(dirname "$(tracelink "${BASH_SOURCE[0]}")")" && pwd)"
 
 JAVA_OPTS="-Xmx4G -Xms32M"
 _jvm_agent="${_bsd_}/agent/.agents/mem-inst.jar"
-_opt_interp="${INTERP:-mod}"
+_opt_interp="${INTERP:-spark}"
 
 function java_exec { java ${JAVA_OPTS} -javaagent:"${_jvm_agent}" $@ ; }
 
