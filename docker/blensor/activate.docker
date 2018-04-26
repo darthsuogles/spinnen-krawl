@@ -1,0 +1,13 @@
+#!/bin/bash
+# -*- shell-script -*-
+
+# To allow access from localhost, run from xquartez terminal
+# xhost +
+
+# run firefox with X11 forwarding and keep running until it quits
+#docker run -e DISPLAY=docker.for.mac.localhost:0 jess/firefox
+docker run -it \
+       -e DISPLAY=docker.for.mac.localhost:0 \
+       -w /blensor/prebuilt \
+       blensor:latest \
+       /bin/bash
