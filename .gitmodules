@@ -100,3 +100,6 @@
 [submodule "pixsrl/mitsuba"]
 	path = pixsrl/mitsuba
 	url = https://github.com/mitsuba-renderer/mitsuba
+[submodule "dlsys/keras"]
+	path = dlsys/keras
+	url = https://github.com/darthsuogles/keras.git
