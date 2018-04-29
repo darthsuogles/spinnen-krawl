@@ -103,3 +103,6 @@
 [submodule "dlsys/keras"]
 	path = dlsys/keras
 	url = https://github.com/darthsuogles/keras.git
+[submodule "pixsrl/opengl/docker-ubuntu-vnc-desktop"]
+	path = pixsrl/opengl/docker-ubuntu-vnc-desktop
+	url = https://github.com/darthsuogles/docker-ubuntu-vnc-desktop.git
