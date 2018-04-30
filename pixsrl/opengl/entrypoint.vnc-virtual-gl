@@ -1,0 +1,41 @@
+#!/bin/bash
+# -*- shell-script -*-
+
+cat <<_XORG_CONF_EOF_ | tee /root/xorg.conf
+Section "Device"
+    Identifier     "Device0"
+    Driver         "nvidia"
+    VendorName     "NVIDIA Corporation"
+    BusID          "PCI:2:0:0"
+EndSection
+Section "Screen"
+    Identifier     "Screen0"
+    Device         "Device0"
+    DefaultDepth    24
+    Option         "AllowEmptyInitialConfiguration" "True"
+    Option         "UseDisplayDevice" "none"
+    SubSection     "Display"
+        Depth       24
+        Virtual 1024 768
+    EndSubSection
+EndSection
+Section "ServerLayout"
+    Identifier     "Layout0"
+    Screen 0 "Screen0" 0 0
+EndSection
+
+_XORG_CONF_EOF_
+
+rm -rf /etc/X11/xorg.conf.d
+
+Xorg -noreset -logverbose -logfile xorg.log -config /root/xorg.conf ${VGL_DISPLAY} &
+sleep 4
+
+/opt/websockify/run 5901 \
+                    --web=/opt/noVNC \
+                    --wrap-mode=ignore \
+                    -- \
+                    /opt/TurboVNC/bin/vncserver \
+                    ${DISPLAY} \
+                    -securitytypes otp -otp \
+                    -noxstartup
