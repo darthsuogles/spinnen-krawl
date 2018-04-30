@@ -1,0 +1,61 @@
+# Learned Topics (from external news media data)
+Topic #0:
+$ billion million year > quarter company said share 's
+Topic #1:
+> investors market bond 's funds bonds stock fund treasury
+Topic #2:
+school university college students black education student schools professor harvard
+Topic #3:
+> bank banks 's said financial new company $ federal
+Topic #4:
+> economic 's economy new recession years war american time
+Topic #5:
+> said state city county workers unemployment district washington area
+Topic #6:
+said president > chairman mr. secretary yesterday administration treasury economic
+Topic #7:
+said > economic business inflation miller report martin time chairman
+Topic #8:
+sales stores auto retailers retail store ford holiday car general
+Topic #9:
+> 	 cent j inflation price president united wage labor
+Topic #10:
+rates mortgage > home rate interest percent housing real estate
+Topic #11:
+'s warner virginia > poehl wilson thomson french west fund
+Topic #12:
+> job jobs recession market work employment people unemployment million
+Topic #13:
+> 's san francisco los angeles cities high immigrants population
+Topic #14:
+'s debt imf crisis russia financial 4 > borrowing rating
+Topic #15:
+'s > n't people mr. like time years says new
+Topic #16:
+> 's stock market company companies new n't inc. said
+Topic #17:
+tax income taxes capital cut investment personal rates gains higher
+Topic #18:
+> farm farmers india market n 1982 wheat time agriculture
+Topic #19:
+> market stock new stocks york dow average points index
+Topic #20:
+fed federal rates reserve > interest rate inflation 's policy
+Topic #21:
+> percent year said economy 's rate economic growth consumer
+Topic #22:
+health > care percent workers benefits pay insurance social security
+Topic #23:
+credit card > cards consumers consumer postal income american $
+Topic #24:
+u.s. dollar 's > trade foreign japan markets currency yen
+Topic #25:
+> art $ grade 's million league mr. year ratings
+Topic #26:
+> federal bill law congress house committee rules government legislation
+Topic #27:
+> budget deficit president 's house spending $ government congress
+Topic #28:
+oil prices $ energy price gas steel cents crude associated
+Topic #29:
+coal > paper k emissions carbon panama prison companies international
